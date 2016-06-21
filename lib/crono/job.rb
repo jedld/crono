@@ -12,7 +12,7 @@ module Crono
     def initialize(performer, period, job_args)
       self.execution_interval = 0.minutes
       self.performer, self.period = performer, period
-      self.job_args = JSON.generate(job_args) 
+      self.job_args = JSON.generate(job_args)
       self.job_log = StringIO.new
       self.job_logger = Logger.new(job_log)
       self.next_performed_at = period.next
@@ -21,7 +21,7 @@ module Crono
 
     def next
       return next_performed_at if next_performed_at.future?
-      Time.now
+      Time.current
     end
 
     def description
@@ -36,7 +36,7 @@ module Crono
       return Thread.new {} if perform_before_interval?
 
       log "Perform #{performer}"
-      self.last_performed_at = Time.now
+      self.last_performed_at = Time.current
       self.next_performed_at = period.next(since: last_performed_at)
 
       Thread.new { perform_job }
@@ -79,7 +79,7 @@ module Crono
     end
 
     def handle_job_fail(exception)
-      finished_time_sec = format('%.2f', Time.now - last_performed_at)
+      finished_time_sec = format('%.2f', Time.current - last_performed_at)
       self.healthy = false
       log_error "Finished #{performer} in #{finished_time_sec} seconds"\
                 " with error: #{exception.message}"
@@ -87,7 +87,7 @@ module Crono
     end
 
     def handle_job_success
-      finished_time_sec = format('%.2f', Time.now - last_performed_at)
+      finished_time_sec = format('%.2f', Time.current - last_performed_at)
       self.healthy = true
       log "Finished #{performer} in #{finished_time_sec} seconds"
     end

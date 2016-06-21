@@ -9,7 +9,7 @@ module Crono
       time =
         case value
         when String then Time.parse(value).utc
-        when Hash   then Time.now.change(value).utc
+        when Hash   then Time.current.change(value).utc
         when Time   then value.utc
         else
           fail "Unknown TimeOfDay format: #{value.inspect}"
